@@ -5,93 +5,10 @@
         <title>GPS Deduplicator for Space Engineers</title>
         <link rel="stylesheet" href="css/style.css">
     </head>
-    <script>
-        function deduplicate() {
-            var input = document.getElementById("GPSinput").value;
-            var output = document.getElementById("GPSoutput");
-            var numberOfDuplicates = 0;
-
-            // Parse entries into dictionary
-            var entries = {};
-            var lines = input.split("\n");
-            for (var i = 0; i < lines.length; i++) {
-                var line = lines[i].split(":");
-                if (line[0] == "GPS") {
-                    entries[i] = {
-                        name: line[1],
-                        x: line[2],
-                        y: line[3],
-                        z: line[4],
-                        color: line[5],
-                        dupeOf: null
-                    };
-                }
-            }
-
-            // Remove duplicates based on distance threshold
-            var distanceThreshold = document.getElementById("distanceThreshold").value;
-            for (var i = 0; i < Object.keys(entries).length; i++) {
-                for (var j = 0; j < i; j++) {
-                    if (i != j) {
-                        var x1 = entries[i].x;
-                        var y1 = entries[i].y;
-                        var z1 = entries[i].z;
-                        var x2 = entries[j].x;
-                        var y2 = entries[j].y;
-                        var z2 = entries[j].z;
-                        var distance = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2) + Math.pow(z1 - z2, 2));
-                        // If there is, process the entry
-                        if (distance < distanceThreshold) {
-                            entries[i].dupeOf = j;
-                            numberOfDuplicates++;
-                            if (document.getElementById("recolorDuplicates").checked) {
-                                entries[i].color = "#FFFF0000";
-                            }
-                            break;
-                        }
-                    }
-                }
-            }
-
-            // Rebuild the output string
-            var outputString = "";
-            for (var i = 0; i < Object.keys(entries).length; i++) {
-                if (entries[i].dupeOf == null || document.getElementById("recolorDuplicates").checked) {
-                    outputString += "GPS:" + entries[i].name + ":" + entries[i].x + ":" + entries[i].y + ":" + entries[i].z + ":" + entries[i].color + ":`\n";
-                }
-            }
-
-            // Output the result
-            output.value = outputString;
-
-            // Display the number of entries and the number of duplicates removed
-            document.getElementById("numEntries").innerHTML = Object.keys(entries).length;
-            document.getElementById("numDuplicates").innerHTML = numberOfDuplicates;
-
-            // Build the fancy output
-            var fancyOutput = document.getElementById("fancyGPSOutput");
-            fancyOutput.innerHTML = "";
-            for (var i = 0; i < Object.keys(entries).length; i++) {
-                if (entries[i].dupeOf == null || document.getElementById("recolorDuplicates").checked) {
-                    var entry = document.createElement("p");
-                    var thisEntry = entries[i].name + " (" + entries[i].x + ", " + entries[i].y + ", " + entries[i].z + ")";
-                    if (entries[i].dupeOf != null) {
-                        var dupeOf = entries[entries[i].dupeOf].name + " (" + entries[entries[i].dupeOf].x + ", " + entries[entries[i].dupeOf].y + ", " + entries[entries[i].dupeOf].z + ")";
-                        entry.innerHTML = thisEntry + " is a duplicate of " + dupeOf;
-                    } else {
-                        entry.innerHTML = thisEntry;
-                    }
-                    // Style the entry with the colour, using only the last 6 characters of the color string   
-                    entry.style.color = "#" + entries[i].color.substring(3);
-                    fancyOutput.appendChild(entry);
-                }
-            }
-        }
-    </script>
+    <script src="js/deduplicator.js"></script>
     <body>
         <header>
             <h1>GPS Deduplicator for Space Engineers</h1>
-
             <p>Remove duplicate GPS entries from your ezGPS Export.</p>
         </header>
         <section id="instructions">
@@ -117,7 +34,7 @@
         </section>
         <section id="ui">
             <p>
-                <input type="checkbox" name="recolorDuplicates" id="recolorDuplicates" checked>Only Recolor Duplicates</checkbox>
+                <input type="checkbox" name="recolorDuplicates" id="recolorDuplicates" checked>Only Recolor Duplicates</input>
             </p>
             <p>
                 <input type="number" name="distanceThreshold" id="distanceThreshold" value="100">m Distance Threshold</input>
