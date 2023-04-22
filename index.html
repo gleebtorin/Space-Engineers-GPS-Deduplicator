@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>GPS Deduplicator for Space Engineers</title>
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    <script>
+        // Given a list of GPS entries, remove any duplicates within 100m of each other.
+        // Example Format:
+        // GPS:Wreck Detector Ping:16876.6569226353:145530.693694506:-111063.486162577:#FF75C9F1:`
+        // GPS:Wreck Detector Ping:12443.2803627091:144882.468745713:-114947.635848001:#FF75C9F1:`
+        // GPS:Wreck Detector Ping:14307.6509283508:142909.991159153:-107153.158428539:#FF75C9F1:`
+
+        function deduplicate() {
+            var input = document.getElementById("GPSinput").value;
+            var output = document.getElementById("GPSoutput");
+            var numberOfDuplicates = 0;
+
+            // Parse entries into dictionary
+            // Name: 1, X: 2, Y: 3, Z: 4, Color: 5
+            // dictionary key should be an integer
+            var entries = {};
+            var lines = input.split("\n");
+            for (var i = 0; i < lines.length; i++) {
+                var line = lines[i].split(":");
+                if (line[0] == "GPS") {
+                    entries[i] = {
+                        name: line[1],
+                        x: line[2],
+                        y: line[3],
+                        z: line[4],
+                        color: line[5],
+                        dupeOf: null
+                    };
+                }
+            }
+
+            // Remove duplicates based on distance threshold
+            var distanceThreshold = document.getElementById("distanceThreshold").value;
+            for (var i = 0; i < Object.keys(entries).length; i++) {
+                for (var j = 0; j < i; j++) {
+                    if (i != j) {
+                        var x1 = entries[i].x;
+                        var y1 = entries[i].y;
+                        var z1 = entries[i].z;
+                        var x2 = entries[j].x;
+                        var y2 = entries[j].y;
+                        var z2 = entries[j].z;
+                        var distance = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2) + Math.pow(z1 - z2, 2));
+                        // If there is, process the entry
+                        if (distance < distanceThreshold) {
+                            entries[i].dupeOf = j;
+                            numberOfDuplicates++;
+                            if (document.getElementById("recolorDuplicates").checked) {
+                                entries[i].color = "#FFFF0000";
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // Rebuild the output string
+            var outputString = "";
+            for (var i = 0; i < Object.keys(entries).length; i++) {
+                if (entries[i].dupeOf == null || document.getElementById("recolorDuplicates").checked) {
+                    outputString += "GPS:" + entries[i].name + ":" + entries[i].x + ":" + entries[i].y + ":" + entries[i].z + ":" + entries[i].color + ":`\n";
+                }
+            }
+
+            // Output the result
+            output.value = outputString;
+
+            // Display the number of entries and the number of duplicates removed
+            document.getElementById("numEntries").innerHTML = Object.keys(entries).length;
+            document.getElementById("numDuplicates").innerHTML = numberOfDuplicates;
+
+            // Build the fancy output
+            var fancyOutput = document.getElementById("fancyGPSOutput");
+            fancyOutput.innerHTML = "";
+            for (var i = 0; i < Object.keys(entries).length; i++) {
+                if (entries[i].dupeOf == null || document.getElementById("recolorDuplicates").checked) {
+                    var entry = document.createElement("p");
+                    var thisEntry = entries[i].name + " (" + entries[i].x + ", " + entries[i].y + ", " + entries[i].z + ")";
+                    if (entries[i].dupeOf != null) {
+                        var dupeOf = entries[entries[i].dupeOf].name + " (" + entries[entries[i].dupeOf].x + ", " + entries[entries[i].dupeOf].y + ", " + entries[entries[i].dupeOf].z + ")";
+                        entry.innerHTML = thisEntry + " is a duplicate of " + dupeOf;
+                    } else {
+                        entry.innerHTML = thisEntry;
+                    }
+                    // Style the entry with the colour, using only the last 6 characters of the color string   
+                    entry.style.color = "#" + entries[i].color.substring(3);
+                    fancyOutput.appendChild(entry);
+                }
+            }
+        }
+    </script>
+    <body>
+        <header>
+            <h1>GPS Deduplicator for Space Engineers</h1>
+
+            <p>Remove duplicate GPS entries from your ezGPS Export.</p>
+        </header>
+        <section id="instructions">
+            <h2>Instructions</h2>
+            <ol>
+                <li>Export your GPS data with ezGPS: <kbd>/ez e</kbd></li>
+                <li>Copy your clipboard into the text area below</li>
+                <li>Click the "Remove Duplicates" button</li>
+                <li>For full Deduplication: Delete all GPS entries: <kbd>/ez deleteall</kbd> <b>Please Note:</b> You may lose GPSes you want by doing this.</li>
+                <li>Copy the output from the text area below into your clipboard</li>
+                <li>Import your new GPS entries: <kbd>/ez i rc</kbd></li>
+            </ol>
+        </section>
+        <section id="form">
+            <textarea name="GPSinput" id="GPSinput" cols="100" rows="10" placeholder="Paste your GPS export here."></textarea>
+        </section>
+        <section id="output">
+            <textarea name="GPSoutput" id="GPSoutput" cols="100" rows="10" placeholder="Your deduplicated GPS data will appear here."></textarea>
+        </section>
+        <section id="stats">
+            <p>Entries: <span id="numEntries">0</span></p>
+            <p>Duplicates: <span id="numDuplicates">0</span></p>
+        </section>
+        <section id="ui">
+            <p>
+                <input type="checkbox" name="recolorDuplicates" id="recolorDuplicates" checked>Only Recolor Duplicates</checkbox>
+            </p>
+            <p>
+                <input type="number" name="distanceThreshold" id="distanceThreshold" value="100">m Distance Threshold</input>
+            </p>
+            <button onclick="deduplicate()">Remove Duplicates</button>
+        </section>
+        <section id="GPSlist">
+            <p>GPS List:</p>
+            <!-- HTML List of GPSes will display here -->
+            <div id="fancyGPSOutput" style="background-color: black;"></div>
+        </section>
+        <footer>
+            <p>ezGPS is a tool for Space Engineers that allows you to export and import GPS data. It can be found <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=1480940163">here</a>.</p>
+            <p>Created by <a href="http://www.gleebtorin.com/">Gleeb Torin</a> for <a href="http://www.spaceengineersgame.com/">Space Engineers</a>. &copy; 2023</p>
+        </footer>
+    </body>
+</html>

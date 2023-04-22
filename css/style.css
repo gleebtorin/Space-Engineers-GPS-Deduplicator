@@ -1,0 +1,130 @@
+/* Reset styles for consistent browser rendering */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Global styles */
+  body {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #333;
+  }
+  
+  a {
+    color: #0066cc;
+    text-decoration: none;
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }
+  
+  h1, h2 {
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  p {
+    margin-bottom: 10px;
+  }
+  
+  ul, ol {
+    margin-bottom: 10px;
+    margin-left: 20px;
+  }
+  
+  kbd {
+    background-color: #eee;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 2px 4px;
+    font-family: monospace;
+  }
+  
+  textarea {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    margin-bottom: 10px;
+  }
+  
+  button {
+    display: inline-block;
+    background-color: #0066cc;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #0052a3;
+  }
+  
+  /* Page-specific styles */
+  header {
+    background-color: #0066cc;
+    color: #fff;
+    padding: 20px;
+  }
+  
+  header p {
+    font-size: 18px;
+  }
+  
+  #instructions {
+    margin: 20px 0;
+  }
+  
+  #instructions li {
+    margin-bottom: 10px;
+  }
+  
+  #instructions b {
+    font-weight: bold;
+  }
+  
+  #form, #output {
+    width: 50%;
+    float: left;
+  }
+  
+  #form textarea, #output textarea {
+    height: 300px;
+  }
+  
+  #stats {
+    clear: both;
+    margin-top: 20px;
+  }
+  
+  #stats p {
+    display: inline-block;
+    margin-right: 10px;
+  }
+  
+  #ui {
+    margin-top: 20px;
+  }
+  
+  #ui input {
+    margin-right: 10px;
+  }
+  
+  #GPSlist {
+    margin-top: 20px;
+  }
+  
+  #fancyGPSOutput {
+    background-color: #f2f2f2;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+  }
