@@ -6,20 +6,12 @@
         <link rel="stylesheet" href="css/style.css">
     </head>
     <script>
-        // Given a list of GPS entries, remove any duplicates within 100m of each other.
-        // Example Format:
-        // GPS:Wreck Detector Ping:16876.6569226353:145530.693694506:-111063.486162577:#FF75C9F1:`
-        // GPS:Wreck Detector Ping:12443.2803627091:144882.468745713:-114947.635848001:#FF75C9F1:`
-        // GPS:Wreck Detector Ping:14307.6509283508:142909.991159153:-107153.158428539:#FF75C9F1:`
-
         function deduplicate() {
             var input = document.getElementById("GPSinput").value;
             var output = document.getElementById("GPSoutput");
             var numberOfDuplicates = 0;
 
             // Parse entries into dictionary
-            // Name: 1, X: 2, Y: 3, Z: 4, Color: 5
-            // dictionary key should be an integer
             var entries = {};
             var lines = input.split("\n");
             for (var i = 0; i < lines.length; i++) {
