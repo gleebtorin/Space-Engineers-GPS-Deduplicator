@@ -1,3 +1,7 @@
+/**
+ * Parses GPS coordinates from an input element, removes duplicates based on a distance threshold, and displays the output in an output element.
+ * @returns {void}
+ */
 function deduplicate() {
     const input = document.getElementById("GPSinput").value;
     const output = document.getElementById("GPSoutput");
@@ -82,6 +86,12 @@ function deduplicate() {
     }
 }
 
+/**
+ * Converts an ARGB hexadecimal color code to an RGB hexadecimal color code.
+ * @param {string} argbHex - The ARGB hexadecimal color code to convert.
+ * @returns {string} The equivalent RGB hexadecimal color code.
+ */
 function ARGBHexToRGBHex(argbHex) {
+    // Remove the alpha channel from the input code and return the remaining RGB code
     return "#" + argbHex.substring(3);
 }
